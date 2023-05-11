@@ -64,6 +64,12 @@ def checkSlots(id, cd):
     return not noSlots
     # closing browser
 
+def send_photo(TOKEN, chat_id, image_path, image_caption=""):
+    data = {"chat_id": chat_id, "caption": image_caption}
+    url = "https://api.telegram.org/bot%s/sendPhoto" % TOKEN
+    with open(image_path, "rb") as image_file:
+        ret = requests.post(url, data=data, files={"photo": image_file})
+
 id=os.environ["MID_ID"]
 cd=os.environ["MID_CODE"]
 
@@ -77,7 +83,7 @@ for i in range(20):
 botkey=os.environ["MID_BOTKEY"]
 mychannel=os.environ["MID_CHANNEL"]
 
-tgapi=f'https://api.telegram.org/bot{botkey}/sendMessage'
+""" tgapi=f'https://api.telegram.org/bot{botkey}/sendMessage'
 payload={
   "text": f'Has slots!!! {id}' if success else f'No slots {id}',
   "parse_mode": "HTML",
@@ -86,4 +92,6 @@ payload={
   "chat_id": mychannel
 }
 
-requests.post(tgapi, json=payload)
+requests.post(tgapi, json=payload) """
+
+send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id}' if success else f'No slots {id}')
