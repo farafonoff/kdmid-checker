@@ -58,9 +58,9 @@ def checkSlots(id, cd):
     for element in pElements:
         # print(element.text)
         text = element.text
-        if text.find(badStr) == -1:
+        if text.find(badStr) != -1:
             noSlots=True
-        if text.find(badStr2) == -1:
+        if text.find(badStr2) != -1:
             noSlots=True            
 #    if noSlots:
 #        driver.save_screenshot("fail.png")
