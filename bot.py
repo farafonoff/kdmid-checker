@@ -11,12 +11,18 @@ from selenium.webdriver.chrome.options import Options
 options = Options()
 options.headless = True
 
+try:
+    baseurl=os.environ['MID_URL']
+except:
+    baseurl="https://trabzon.kdmid.ru/queue/OrderInfo.aspx"
+
 def checkSlots(id, cd):
     # initializing webdriver for Chrome
     driver = webdriver.Chrome(options=options)
 
     badStr="нет свободного времени"
-    url=f'https://trabzon.kdmid.ru/queue/OrderInfo.aspx?id={id}&cd={cd}'
+    badStr2="Свободное время в системе записи отсутствует"
+    url=f'{baseurl}?id={id}&cd={cd}'
     print("Opening url " + url)
     driver.get(url)
     
@@ -54,6 +60,8 @@ def checkSlots(id, cd):
         text = element.text
         if text.find(badStr) == -1:
             noSlots=True
+        if text.find(badStr2) == -1:
+            noSlots=True            
 #    if noSlots:
 #        driver.save_screenshot("fail.png")
 #    else:
