@@ -7,15 +7,18 @@ import requests
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+options = Options()
+options.headless = True
 
 def checkSlots(id, cd):
     # initializing webdriver for Chrome
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=options)
 
     badStr="нет свободного времени"
-
-
-    driver.get(f'https://trabzon.kdmid.ru/queue/OrderInfo.aspx?id={id}&cd={cd}')
+    url=f'https://trabzon.kdmid.ru/queue/OrderInfo.aspx?id={id}&cd={cd}'
+    print("Opening url " + url)
+    driver.get(url)
     
     time.sleep(5)
 
@@ -26,10 +29,12 @@ def checkSlots(id, cd):
     with open('captcha.jpg', 'wb') as file:
         file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
 
+    print("Solving captcha")
+
     result = subprocess.check_output(['./vocr', 'captcha.jpg'])
 
     captcha = result.decode('ascii')
-
+    print("my solution " + captcha)
     captchaSolution = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtCode"]')
     captchaSolution.clear()
     captchaSolution.send_keys(captcha)
@@ -49,10 +54,11 @@ def checkSlots(id, cd):
         text = element.text
         if text.find(badStr) == -1:
             noSlots=True
-    if noSlots:
-        driver.save_screenshot("fail.png")
-    else:
-        driver.save_screenshot("success.png")
+#    if noSlots:
+#        driver.save_screenshot("fail.png")
+#    else:
+#        driver.save_screenshot("success.png")
+    print("Has no slots" if noSlots else "Found slots")
     driver.save_screenshot("screenshot.png")
     driver.close()
     return not noSlots
