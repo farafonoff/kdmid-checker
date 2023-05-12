@@ -91,11 +91,17 @@ def checkSlots(id, cd):
         driver.save_screenshot("screenshot1.png")
         time.sleep(1)
         send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
-        allInputs = driver.find_elements(By.TAG_NAME, "input")
-        for input in allInputs:
+        # allInputs = driver.find_elements(By.TAG_NAME, "input")
+        mainButton = driver.find_element(By.ID, "ctl00_MainContent_Button1")
+        mainButton.click()
+        driver.save_screenshot("screenshot2.png")
+        time.sleep(1)
+        send_photo(botkey, mychannel, "./screenshot2.png", f'{id} Clicked main button')
+
+        """for input in allInputs:
             print(input)
             print(input.get_attribute("id"))
-            print(input.get_attribute("name"))
+            print(input.get_attribute("name")) """
     except:
         print("Registration process failed")
     driver.close()
