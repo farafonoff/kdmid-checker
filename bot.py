@@ -82,28 +82,29 @@ def checkSlots(id, cd):
     print("Has no slots" if noSlots else "Found slots")
     driver.save_screenshot("screenshot.png")
     hasSlots = not noSlots
-    try:
-        radios = driver.find_elements(By.XPATH, "//input[@type='radio']")
-        print(len(radios))
-        if (len(radios) > 0): 
-            radios[0].click()
-        
-        driver.save_screenshot("screenshot1.png")
-        time.sleep(1)
-        send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
-        # allInputs = driver.find_elements(By.TAG_NAME, "input")
-        mainButton = driver.find_element(By.ID, "ctl00_MainContent_Button1")
-        mainButton.click()
-        driver.save_screenshot("screenshot2.png")
-        time.sleep(1)
-        send_photo(botkey, mychannel, "./screenshot2.png", f'{id} Clicked main button')
+    if hasSlots:
+        try:
+            radios = driver.find_elements(By.XPATH, "//input[@type='radio']")
+            print(len(radios))
+            if (len(radios) > 0): 
+                radios[0].click()
+            
+            driver.save_screenshot("screenshot1.png")
+            time.sleep(1)
+            send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
+            # allInputs = driver.find_elements(By.TAG_NAME, "input")
+            mainButton = driver.find_element(By.ID, "ctl00_MainContent_Button1")
+            mainButton.click()
+            driver.save_screenshot("screenshot2.png")
+            time.sleep(1)
+            send_photo(botkey, mychannel, "./screenshot2.png", f'{id} Clicked main button')
 
-        """for input in allInputs:
-            print(input)
-            print(input.get_attribute("id"))
-            print(input.get_attribute("name")) """
-    except:
-        print("Registration process failed")
+            """for input in allInputs:
+                print(input)
+                print(input.get_attribute("id"))
+                print(input.get_attribute("name")) """
+        except:
+            print("Registration process failed")
     driver.close()
     return hasSlots
     # closing browser
