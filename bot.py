@@ -4,6 +4,7 @@ import time
 import subprocess
 import os
 import requests
+import shutil
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -44,12 +45,12 @@ def checkSlots(id, cd):
     #codElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtUniqueID"]')
 
 
-    with open('captcha.jpg', 'wb') as file:
+    with open('captcha.png', 'wb') as file:
         file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
 
     print("Solving captcha")
 
-    result = subprocess.check_output(['./vocr', 'captcha.jpg'])
+    result = subprocess.check_output(['./vocr', 'captcha.png'])
 
     captcha = result.decode('ascii')
     print("my solution " + captcha)
@@ -64,6 +65,8 @@ def checkSlots(id, cd):
     signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
     signInElement.click()
     time.sleep(1)
+
+    shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
 
     pElements = driver.find_elements(By.TAG_NAME, 'p')
     noSlots=False
