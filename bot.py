@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 options = Options()
-options.headless = True
+options.headless = False
 
 try:
     baseurl=os.environ['MID_URL']
@@ -39,7 +39,7 @@ def checkSlots(id, cd):
     print("Opening url " + url)
     driver.get(url)
     
-    time.sleep(5)
+    time.sleep(20)
 
     #nzElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtID"]')
     #codElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtUniqueID"]')
