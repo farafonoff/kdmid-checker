@@ -16,6 +16,19 @@ try:
 except:
     baseurl="https://trabzon.kdmid.ru/queue/OrderInfo.aspx"
 
+
+botkey=os.environ["MID_BOTKEY"]
+mychannel=os.environ["MID_CHANNEL"]
+id=os.environ["MID_ID"]
+cd=os.environ["MID_CODE"]
+
+
+def send_photo(TOKEN, chat_id, image_path, image_caption=""):
+    data = {"chat_id": chat_id, "caption": image_caption}
+    url = "https://api.telegram.org/bot%s/sendPhoto" % TOKEN
+    with open(image_path, "rb") as image_file:
+        ret = requests.post(url, data=data, files={"photo": image_file})
+
 def checkSlots(id, cd):
     # initializing webdriver for Chrome
     driver = webdriver.Chrome(options=options)
@@ -68,18 +81,26 @@ def checkSlots(id, cd):
 #        driver.save_screenshot("success.png")
     print("Has no slots" if noSlots else "Found slots")
     driver.save_screenshot("screenshot.png")
+    hasSlots = not noSlots
+    try:
+        radios = driver.find_elements(By.XPATH, "//input[@type='radio']")
+        print(len(radios))
+        if (len(radios) > 0): 
+            radios[0].click()
+        
+        driver.save_screenshot("screenshot1.png")
+        time.sleep(1)
+        send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
+        allInputs = driver.find_elements(By.TAG_NAME, "input")
+        for input in allInputs:
+            print(input)
+            print(input.get_attribute("id"))
+            print(input.get_attribute("name"))
+    except:
+        print("Registration process failed")
     driver.close()
-    return not noSlots
+    return hasSlots
     # closing browser
-
-def send_photo(TOKEN, chat_id, image_path, image_caption=""):
-    data = {"chat_id": chat_id, "caption": image_caption}
-    url = "https://api.telegram.org/bot%s/sendPhoto" % TOKEN
-    with open(image_path, "rb") as image_file:
-        ret = requests.post(url, data=data, files={"photo": image_file})
-
-id=os.environ["MID_ID"]
-cd=os.environ["MID_CODE"]
 
 for i in range(20):
     try:
@@ -87,19 +108,5 @@ for i in range(20):
         break;
     except:
         print("error happened, retry")
-
-botkey=os.environ["MID_BOTKEY"]
-mychannel=os.environ["MID_CHANNEL"]
-
-""" tgapi=f'https://api.telegram.org/bot{botkey}/sendMessage'
-payload={
-  "text": f'Has slots!!! {id}' if success else f'No slots {id}',
-  "parse_mode": "HTML",
-  "disable_web_page_preview": False,
-  "disable_notification": False,
-  "chat_id": mychannel
-}
-
-requests.post(tgapi, json=payload) """
 
 send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id}' if success else f'No slots {id}')
