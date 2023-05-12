@@ -22,7 +22,6 @@ mychannel=os.environ["MID_CHANNEL"]
 id=os.environ["MID_ID"]
 cd=os.environ["MID_CODE"]
 
-
 def send_photo(TOKEN, chat_id, image_path, image_caption=""):
     data = {"chat_id": chat_id, "caption": image_caption}
     url = "https://api.telegram.org/bot%s/sendPhoto" % TOKEN
@@ -88,15 +87,14 @@ def checkSlots(id, cd):
             print(len(radios))
             if (len(radios) > 0): 
                 radios[0].click()
-            
-            driver.save_screenshot("screenshot1.png")
             time.sleep(1)
+            driver.save_screenshot("screenshot1.png")
             send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
             # allInputs = driver.find_elements(By.TAG_NAME, "input")
             mainButton = driver.find_element(By.ID, "ctl00_MainContent_Button1")
             mainButton.click()
-            driver.save_screenshot("screenshot2.png")
             time.sleep(1)
+            driver.save_screenshot("screenshot2.png")
             send_photo(botkey, mychannel, "./screenshot2.png", f'{id} Clicked main button')
 
             """for input in allInputs:
