@@ -6,6 +6,7 @@ import os
 import requests
 import shutil
 import traceback
+import mlcaptcha
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
@@ -48,14 +49,17 @@ def checkSlots(id, cd):
 
     captchaSolved = False
     while not captchaSolved:
-        with open('captcha.png', 'wb') as file:
-            file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
-
+#        with open('captcha.png', 'wb') as file:
+#            file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
+        pngstring = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png
         print("Solving captcha")
 
-        result = subprocess.check_output(['./vocr', 'captcha.png'])
+        # result = subprocess.check_output(['./vocr', 'captcha.png'])
 
-        captcha = result.decode('ascii')
+        # captcha = result.decode('ascii')
+
+        captcha = mlcaptcha.solvePngString(pngstring)
+
         print("my solution " + captcha)
         captchaSolution = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtCode"]')
         captchaSolution.clear()
@@ -77,7 +81,7 @@ def checkSlots(id, cd):
     signInElement.click()
     time.sleep(1)
 
-    shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
+    # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
 
     pElements = driver.find_elements(By.TAG_NAME, 'p')
     noSlots=False
