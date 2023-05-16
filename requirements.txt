@@ -40,7 +40,6 @@ tensorboard==2.13.0
 tensorboard-data-server==0.7.0
 tensorflow==2.13.0rc0
 tensorflow-estimator==2.13.0rc0
-tensorflow-macos==2.13.0rc0
 termcolor==2.3.0
 trio==0.22.0
 trio-websocket==0.10.2
