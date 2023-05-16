@@ -5,7 +5,9 @@ import subprocess
 import os
 import requests
 import shutil
+import traceback
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -44,24 +46,33 @@ def checkSlots(id, cd):
     #nzElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtID"]')
     #codElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtUniqueID"]')
 
+    captchaSolved = False
+    while not captchaSolved:
+        with open('captcha.png', 'wb') as file:
+            file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
 
-    with open('captcha.png', 'wb') as file:
-        file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
+        print("Solving captcha")
 
-    print("Solving captcha")
+        result = subprocess.check_output(['./vocr', 'captcha.png'])
 
-    result = subprocess.check_output(['./vocr', 'captcha.png'])
+        captcha = result.decode('ascii')
+        print("my solution " + captcha)
+        captchaSolution = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtCode"]')
+        captchaSolution.clear()
+        captchaSolved = True
+        captchaSolution.send_keys(captcha)
+        time.sleep(1)
+        #captchaSolution.submit()
+        submitElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonA"]')
+        submitElement.click()
+        time.sleep(1)        
+        try:
+            captchaErrorElements = driver.find_elements(By.XPATH, '//*[@id="ctl00_MainContent_lblCodeErr"]')
+            if len(captchaErrorElements) and captchaErrorElements[0].text.find("Символы с картинки введены неправильно") != -1:
+                captchaSolved = False
+        except NoSuchElementException:
+            captchaSolved = True
 
-    captcha = result.decode('ascii')
-    print("my solution " + captcha)
-    captchaSolution = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtCode"]')
-    captchaSolution.clear()
-    captchaSolution.send_keys(captcha)
-    time.sleep(1)
-    #captchaSolution.submit()
-    submitElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonA"]')
-    submitElement.click()
-    time.sleep(1)
     signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
     signInElement.click()
     time.sleep(1)
@@ -76,7 +87,9 @@ def checkSlots(id, cd):
         if text.find(badStr) != -1:
             noSlots=True
         if text.find(badStr2) != -1:
-            noSlots=True            
+            noSlots=True
+        if text.find("invalid response")!= -1:
+            raise ValueError(text)
 #    if noSlots:
 #        driver.save_screenshot("fail.png")
 #    else:
@@ -110,11 +123,12 @@ def checkSlots(id, cd):
     return hasSlots
     # closing browser
 
-for i in range(20):
+for i in range(3):
     try:
         success = checkSlots(id, cd)
         break;
-    except:
-        print("error happened, retry")
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+#        traceback.print_exception(err)
 
 send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id}' if success else f'No slots {id}')
