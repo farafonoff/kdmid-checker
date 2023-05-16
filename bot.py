@@ -13,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 options = Options()
-options.headless = True
+options.add_argument("--headless=new")
 
 try:
     baseurl=os.environ['MID_URL']
