@@ -81,7 +81,7 @@ def checkSlots(id, cd):
     signInElement.click()
     time.sleep(1)
 
-    shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
+    # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
 
     pElements = driver.find_elements(By.TAG_NAME, 'p')
     noSlots=False
