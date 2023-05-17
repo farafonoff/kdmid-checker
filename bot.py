@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # vocr is built from https://github.com/srirangav/vocr
 
 import time
@@ -13,7 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 options = Options()
-options.add_argument("--headless=new")
+#options.add_argument("--headless=new")
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 
@@ -45,6 +46,7 @@ def checkSlots(id, cd):
     driver.get(url)
     
     time.sleep(10)
+    driver.execute_script('window.alert = function() {}')
 
     #nzElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtID"]')
     #codElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtUniqueID"]')
