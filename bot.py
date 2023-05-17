@@ -127,6 +127,7 @@ def checkSlots(id, cd):
     return hasSlots
     # closing browser
 
+success = False
 for i in range(3):
     try:
         success = checkSlots(id, cd)
