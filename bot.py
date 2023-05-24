@@ -142,4 +142,4 @@ for i in range(3):
         print(f"Unexpected {err=}, {type(err)=}")
 #        traceback.print_exception(err)
 
-send_photo(botkey, mychannel, "./screenshot.png", f'{url} Has slots!!! {id}' if success else f'{url} No slots {id}', success)
+send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id} {url}' if success else f'No slots {id} {url}', success)
