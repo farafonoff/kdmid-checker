@@ -29,8 +29,8 @@ mychannel=os.environ["MID_CHANNEL"]
 id=os.environ["MID_ID"]
 cd=os.environ["MID_CODE"]
 
-def send_photo(TOKEN, chat_id, image_path, image_caption=""):
-    data = {"chat_id": chat_id, "caption": image_caption}
+def send_photo(TOKEN, chat_id, image_path, image_caption="", notification = True):
+    data = {"chat_id": chat_id, "caption": image_caption, "disable_notification": not notification}
     url = "https://api.telegram.org/bot%s/sendPhoto" % TOKEN
     with open(image_path, "rb") as image_file:
         ret = requests.post(url, data=data, files={"photo": image_file})
@@ -140,4 +140,4 @@ for i in range(3):
         print(f"Unexpected {err=}, {type(err)=}")
 #        traceback.print_exception(err)
 
-send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id}' if success else f'No slots {id}')
+send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id}' if success else f'No slots {id}', success)
