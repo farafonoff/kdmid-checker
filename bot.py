@@ -29,6 +29,8 @@ mychannel=os.environ["MID_CHANNEL"]
 id=os.environ["MID_ID"]
 cd=os.environ["MID_CODE"]
 
+url=f'{baseurl}?id={id}&cd={cd}'
+
 def send_photo(TOKEN, chat_id, image_path, image_caption="", notification = True):
     data = {"chat_id": chat_id, "caption": image_caption, "disable_notification": not notification}
     url = "https://api.telegram.org/bot%s/sendPhoto" % TOKEN
@@ -41,7 +43,7 @@ def checkSlots(id, cd):
 
     badStr="нет свободного времени"
     badStr2="Свободное время в системе записи отсутствует"
-    url=f'{baseurl}?id={id}&cd={cd}'
+    
     print("Opening url " + url)
     driver.get(url)
     
@@ -140,4 +142,4 @@ for i in range(3):
         print(f"Unexpected {err=}, {type(err)=}")
 #        traceback.print_exception(err)
 
-send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id}' if success else f'No slots {id}', success)
+send_photo(botkey, mychannel, "./screenshot.png", f'{url} Has slots!!! {id}' if success else f'{url} No slots {id}', success)
