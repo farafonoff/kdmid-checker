@@ -78,22 +78,27 @@ def checkSlots(id, cd):
         time.sleep(1)        
         try:
             captchaErrorElements = driver.find_elements(By.XPATH, '//*[@id="ctl00_MainContent_lblCodeErr"]')
-            if len(captchaErrorElements) and captchaErrorElements[0].text.find("Символы с картинки введены неправильно") != -1:
-                captchaSolved = False
+            if len(captchaErrorElements):
+                print(captchaErrorElements[0].text)
+                if captchaErrorElements[0].text.find("Символы с картинки введены правильно") != -1:
+                    captchaSolved = False
         except NoSuchElementException:
             captchaSolved = True
 
+    print("Trying click blue button")
     signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
     signInElement.click()
     time.sleep(1)
 
     # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
 
+    print("Testing results screen")
     pElements = driver.find_elements(By.TAG_NAME, 'p')
     noSlots=False
     for element in pElements:
         # print(element.text)
         text = element.text
+        print(text)
         if text.find(badStr) != -1:
             noSlots=True
         if text.find(badStr2) != -1:
