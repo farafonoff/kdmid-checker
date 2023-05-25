@@ -82,13 +82,20 @@ def checkSlots(id, cd):
                 print(captchaErrorElements[0].text)
                 if captchaErrorElements[0].text.find("Символы с картинки введены правильно") != -1:
                     captchaSolved = False
-        except NoSuchElementException:
+        except NoSuchElementException as captchaError:
             captchaSolved = True
-
-    print("Trying click blue button")
-    signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
-    signInElement.click()
-    time.sleep(1)
+    
+    try:
+        print("Trying click blue button")
+        signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
+        signInElement.click()
+        time.sleep(1)
+    except NoSuchElementException as stateError:
+        # either success or inconsistent state
+        driver.save_screenshot("hz.png")
+        send_photo(botkey, mychannel, "./hz.png", f'Unexpected screen {id} {url}', True)
+        raise stateError
+    
 
     # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
 
