@@ -80,7 +80,7 @@ def checkSlots(id, cd):
             captchaErrorElements = driver.find_elements(By.XPATH, '//*[@id="ctl00_MainContent_lblCodeErr"]')
             if len(captchaErrorElements):
                 print(captchaErrorElements[0].text)
-                if captchaErrorElements[0].text.find("Символы с картинки введены правильно") != -1:
+                if captchaErrorElements[0].text.find("имволы с картинки") != -1:
                     captchaSolved = False
         except NoSuchElementException as captchaError:
             captchaSolved = True
