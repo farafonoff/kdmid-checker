@@ -139,12 +139,17 @@ def checkSlots(id, cd):
     # closing browser
 
 success = False
+exception = False
+fail = True
 for i in range(3):
     try:
         success = checkSlots(id, cd)
+        fail = False
         break;
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
+        exception = err
 #        traceback.print_exception(err)
-
+if fail:
+    raise exception
 send_photo(botkey, mychannel, "./screenshot.png", f'Has slots!!! {id} {url}' if success else f'No slots {id} {url}', success)
