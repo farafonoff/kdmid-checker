@@ -172,13 +172,21 @@ def checkSlots(id, cd):
 success = False
 exception = False
 fail = True
-for i in range(3):
+for i in range(4):
     try:
         success = checkSlots(id, cd)
         fail = False
         break;
     except Exception as err:
+        print(f'attempt #{i} failed')
         print(f"Unexpected {err=}, {type(err)=}")
+        if (i==1):
+            try:
+                proxy=os.environ['MID_PROXY']
+                print(f'Retrying with proxy {proxy}')
+                options.add_argument(f'--proxy-server={proxy}')
+            except:
+                print("No proxy specified")
         exception = err
 #        traceback.print_exception(err)
 if fail:
