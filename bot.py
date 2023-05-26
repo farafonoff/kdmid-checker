@@ -50,123 +50,125 @@ def checkSlots(id, cd):
     # initializing webdriver for Chrome
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(3)
-
-    badStr="нет свободного времени"
-    badStr2="Свободное время в системе записи отсутствует"
-    
-    print("Opening url " + url)
-    driver.get(url)
-
     try:
-        print("waiting for page to load")
-        wait = WebDriverWait(driver, 60)
-        wait.until(EC.element_to_be_clickable((By.ID, 'ctl00_MainContent_ButtonA')))
-        print("page loaded")
-    except TimeoutException as error:
-        # not loaded
-        print("page not loaded")
-        driver.save_screenshot("noload.png")
-        send_photo(botkey, mychannel, "./noload.png", f'Unexpected screen {id} {url}', True)
-        raise error
 
+        badStr="нет свободного времени"
+        badStr2="Свободное время в системе записи отсутствует"
+        
+        print("Opening url " + url)
+        driver.get(url)
 
-    
-    driver.execute_script('window.alert = function() {}')
-
-    #nzElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtID"]')
-    #codElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtUniqueID"]')
-
-    captchaSolved = False
-    while not captchaSolved:
-#        with open('captcha.png', 'wb') as file:
-#            file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
-        time.sleep(1) # sleep just in case image not fully loaded
-        pngstring = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png
-        print("Solving captcha")
-
-        # result = subprocess.check_output(['./vocr', 'captcha.png'])
-
-        # captcha = result.decode('ascii')
-
-        captcha = mlcaptcha.solvePngString(pngstring)
-
-        print("my solution " + captcha)
-        captchaSolution = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtCode"]')
-        captchaSolution.clear()
-        captchaSolved = True
-        captchaSolution.send_keys(captcha)
-        #time.sleep(1)
-        #captchaSolution.submit()
-        submitElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonA"]')
-        submitElement.click()
-        #time.sleep(1)
         try:
-            captchaErrorElements = driver.find_elements(By.XPATH, '//*[@id="ctl00_MainContent_lblCodeErr"]')
-            if len(captchaErrorElements):
-                print(captchaErrorElements[0].text)
-                if captchaErrorElements[0].text.find("имволы с картинки") != -1:
-                    captchaSolved = False
-        except NoSuchElementException as captchaError:
+            print("waiting for page to load")
+            wait = WebDriverWait(driver, 60)
+            wait.until(EC.element_to_be_clickable((By.ID, 'ctl00_MainContent_ButtonA')))
+            print("page loaded")
+        except TimeoutException as error:
+            # not loaded
+            print("page not loaded")
+            driver.save_screenshot("noload.png")
+            send_photo(botkey, mychannel, "./noload.png", f'Unexpected screen {id} {url}', True)
+            raise error
+
+
+        
+        driver.execute_script('window.alert = function() {}')
+
+        #nzElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtID"]')
+        #codElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtUniqueID"]')
+
+        captchaSolved = False
+        while not captchaSolved:
+    #        with open('captcha.png', 'wb') as file:
+    #            file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
+            time.sleep(1) # sleep just in case image not fully loaded
+            pngstring = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png
+            print("Solving captcha")
+
+            # result = subprocess.check_output(['./vocr', 'captcha.png'])
+
+            # captcha = result.decode('ascii')
+
+            captcha = mlcaptcha.solvePngString(pngstring)
+
+            print("my solution " + captcha)
+            captchaSolution = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtCode"]')
+            captchaSolution.clear()
             captchaSolved = True
-    
-    try:
-        print("Trying click blue button")
-        signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
-        signInElement.click()
-        #time.sleep(1)
-    except NoSuchElementException as stateError:
-        # either success or inconsistent state
-        driver.save_screenshot("hz.png")
-        send_photo(botkey, mychannel, "./hz.png", f'Unexpected screen {id} {url}', True)
-        raise stateError
-    
-
-    # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
-    time.sleep(1)
-    print("Testing results screen")
-    pElements = driver.find_elements(By.TAG_NAME, 'p')
-    noSlots=False
-    for element in pElements:
-        # print(element.text)
-        text = element.text
-        print(text)
-        if text.find(badStr) != -1:
-            noSlots=True
-        if text.find(badStr2) != -1:
-            noSlots=True
-        if text.find("invalid response")!= -1:
-            raise ValueError(text)
-#    if noSlots:
-#        driver.save_screenshot("fail.png")
-#    else:
-#        driver.save_screenshot("success.png")
-    print("Has no slots" if noSlots else "Found slots")
-    driver.save_screenshot("screenshot.png")
-    hasSlots = not noSlots
-    if hasSlots:
+            captchaSolution.send_keys(captcha)
+            #time.sleep(1)
+            #captchaSolution.submit()
+            submitElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonA"]')
+            submitElement.click()
+            #time.sleep(1)
+            try:
+                captchaErrorElements = driver.find_elements(By.XPATH, '//*[@id="ctl00_MainContent_lblCodeErr"]')
+                if len(captchaErrorElements):
+                    print(captchaErrorElements[0].text)
+                    if captchaErrorElements[0].text.find("имволы с картинки") != -1:
+                        captchaSolved = False
+            except NoSuchElementException as captchaError:
+                captchaSolved = True
+        
         try:
-            radios = driver.find_elements(By.XPATH, "//input[@type='radio']")
-            print(len(radios))
-            if (len(radios) > 0): 
-                radios[0].click()
-            time.sleep(1)
-            driver.save_screenshot("screenshot1.png")
-            send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
-            # allInputs = driver.find_elements(By.TAG_NAME, "input")
-            mainButton = driver.find_element(By.ID, "ctl00_MainContent_Button1")
-            mainButton.click()
-            time.sleep(1)
-            driver.save_screenshot("screenshot2.png")
-            send_photo(botkey, mychannel, "./screenshot2.png", f'{id} Clicked main button')
+            print("Trying click blue button")
+            signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
+            signInElement.click()
+            #time.sleep(1)
+        except NoSuchElementException as stateError:
+            # either success or inconsistent state
+            driver.save_screenshot("hz.png")
+            send_photo(botkey, mychannel, "./hz.png", f'Unexpected screen {id} {url}', True)
+            raise stateError
+        
 
-            """for input in allInputs:
-                print(input)
-                print(input.get_attribute("id"))
-                print(input.get_attribute("name")) """
-        except:
-            print("Registration process failed")
-    driver.close()
-    return hasSlots
+        # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
+        time.sleep(1)
+        print("Testing results screen")
+        pElements = driver.find_elements(By.TAG_NAME, 'p')
+        noSlots=False
+        for element in pElements:
+            # print(element.text)
+            text = element.text
+            print(text)
+            if text.find(badStr) != -1:
+                noSlots=True
+            if text.find(badStr2) != -1:
+                noSlots=True
+            if text.find("invalid response")!= -1:
+                raise ValueError(text)
+    #    if noSlots:
+    #        driver.save_screenshot("fail.png")
+    #    else:
+    #        driver.save_screenshot("success.png")
+        print("Has no slots" if noSlots else "Found slots")
+        driver.save_screenshot("screenshot.png")
+        hasSlots = not noSlots
+        if hasSlots:
+            try:
+                radios = driver.find_elements(By.XPATH, "//input[@type='radio']")
+                print(len(radios))
+                if (len(radios) > 0): 
+                    radios[0].click()
+                time.sleep(1)
+                driver.save_screenshot("screenshot1.png")
+                send_photo(botkey, mychannel, "./screenshot1.png", f'{id} Clicked radiobutton')
+                # allInputs = driver.find_elements(By.TAG_NAME, "input")
+                mainButton = driver.find_element(By.ID, "ctl00_MainContent_Button1")
+                mainButton.click()
+                time.sleep(1)
+                driver.save_screenshot("screenshot2.png")
+                send_photo(botkey, mychannel, "./screenshot2.png", f'{id} Clicked main button')
+
+                """for input in allInputs:
+                    print(input)
+                    print(input.get_attribute("id"))
+                    print(input.get_attribute("name")) """
+            except:
+                print("Registration process failed")
+        return hasSlots
+    finally:                
+        driver.close()
     # closing browser
 
 success = False
