@@ -9,12 +9,15 @@ import shutil
 import traceback
 import mlcaptcha
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 options = Options()
-options.add_argument("--headless=new")
+#options.add_argument("--headless=new")
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 
@@ -40,14 +43,25 @@ def send_photo(TOKEN, chat_id, image_path, image_caption="", notification = True
 def checkSlots(id, cd):
     # initializing webdriver for Chrome
     driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(3)
 
     badStr="нет свободного времени"
     badStr2="Свободное время в системе записи отсутствует"
     
     print("Opening url " + url)
     driver.get(url)
+
+    try:
+        wait = WebDriverWait(driver, 60)
+        wait.until(EC.element_to_be_clickable((By.ID, 'ctl00_MainContent_ButtonA')))
+    except TimeoutException as error:
+        # not loaded
+        driver.save_screenshot("noload.png")
+        send_photo(botkey, mychannel, "./noload.png", f'Unexpected screen {id} {url}', True)
+        raise error
+
+
     
-    time.sleep(10)
     driver.execute_script('window.alert = function() {}')
 
     #nzElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_txtID"]')
@@ -57,6 +71,7 @@ def checkSlots(id, cd):
     while not captchaSolved:
 #        with open('captcha.png', 'wb') as file:
 #            file.write(driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png)
+        time.sleep(1) # sleep just in case image not fully loaded
         pngstring = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_imgSecNum"]').screenshot_as_png
         print("Solving captcha")
 
@@ -71,11 +86,11 @@ def checkSlots(id, cd):
         captchaSolution.clear()
         captchaSolved = True
         captchaSolution.send_keys(captcha)
-        time.sleep(1)
+        #time.sleep(1)
         #captchaSolution.submit()
         submitElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonA"]')
         submitElement.click()
-        time.sleep(1)        
+        #time.sleep(1)
         try:
             captchaErrorElements = driver.find_elements(By.XPATH, '//*[@id="ctl00_MainContent_lblCodeErr"]')
             if len(captchaErrorElements):
@@ -89,7 +104,7 @@ def checkSlots(id, cd):
         print("Trying click blue button")
         signInElement = driver.find_element(By.XPATH, '//*[@id="ctl00_MainContent_ButtonB"]')
         signInElement.click()
-        time.sleep(1)
+        #time.sleep(1)
     except NoSuchElementException as stateError:
         # either success or inconsistent state
         driver.save_screenshot("hz.png")
@@ -98,7 +113,7 @@ def checkSlots(id, cd):
     
 
     # shutil.copy("./captcha.png", f'/Users/farafona/Projects/captchas/{captcha}.png')
-
+    time.sleep(1)
     print("Testing results screen")
     pElements = driver.find_elements(By.TAG_NAME, 'p')
     noSlots=False
