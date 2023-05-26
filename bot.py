@@ -52,10 +52,13 @@ def checkSlots(id, cd):
     driver.get(url)
 
     try:
+        print("waiting for page to load")
         wait = WebDriverWait(driver, 60)
         wait.until(EC.element_to_be_clickable((By.ID, 'ctl00_MainContent_ButtonA')))
+        print("page loaded")
     except TimeoutException as error:
         # not loaded
+        print("page not loaded")
         driver.save_screenshot("noload.png")
         send_photo(botkey, mychannel, "./noload.png", f'Unexpected screen {id} {url}', True)
         raise error
