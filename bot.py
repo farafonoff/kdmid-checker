@@ -20,12 +20,6 @@ options = Options()
 options.add_argument("--headless=new")
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
-try:
-    proxy=os.environ['MID_PROXY']
-    print(f'using proxy {proxy}')
-    options.add_argument(f'--proxy-server={proxy}')
-except:
-    print("not using proxy")
 
 try:
     baseurl=os.environ['MID_URL']
