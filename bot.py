@@ -16,16 +16,29 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-options = Options()
-options.add_argument("--headless=new")
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+
+def makeOptions():
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+options = makeOptions()
 
 try:
     baseurl=os.environ['MID_URL']
 except:
     baseurl="https://trabzon.kdmid.ru/queue/OrderInfo.aspx"
 
+blacklist=['https://istanbul.kdmid.ru/queue/OrderInfo.aspx']
+
+if baseurl in blacklist:
+    try:
+        proxy=os.environ['MID_PROXY']
+        print(f'Retrying with proxy {proxy}')
+        options.add_argument(f'--proxy-server={proxy}')
+    except:
+        print("No proxy specified")
 
 botkey=os.environ["MID_BOTKEY"]
 mychannel=os.environ["MID_CHANNEL"]
@@ -176,13 +189,9 @@ for i in range(4):
     except Exception as err:
         print(f'attempt #{i} failed')
         print(f"Unexpected {err=}, {type(err)=}")
-        if (i==1):
-            try:
-                proxy=os.environ['MID_PROXY']
-                print(f'Retrying with proxy {proxy}')
-                options.add_argument(f'--proxy-server={proxy}')
-            except:
-                print("No proxy specified")
+        if (i==0):
+            print("removing proxy if it was")
+            options=makeOptions()
         exception = err
 #        traceback.print_exception(err)
 if fail:
