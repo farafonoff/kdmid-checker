@@ -35,7 +35,7 @@ blacklist=['https://istanbul.kdmid.ru/queue/OrderInfo.aspx']
 if baseurl in blacklist:
     try:
         proxy=os.environ['MID_PROXY']
-        print(f'Retrying with proxy {proxy}')
+        print(f'Trying with proxy {proxy}')
         options.add_argument(f'--proxy-server={proxy}')
     except:
         print("No proxy specified")
