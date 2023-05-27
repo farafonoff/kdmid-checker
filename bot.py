@@ -33,7 +33,7 @@ except:
 
 blacklist=['https://istanbul.kdmid.ru/queue/OrderInfo.aspx']
 
-if baseurl in blacklist:
+if not baseurl in blacklist:
     try:
         proxy=os.environ['MID_PROXY']
         print(f'Trying with proxy {proxy}')
